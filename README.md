@@ -81,8 +81,9 @@ popd
 ```
 
 # Examples
-This repository contains two examples in their respective directories:
-1. hello
-2. clock
+This repository contains three examples in their respective directories:
+1. hello    [html with embedded javascript]
+2. clock    [html with embedded javascript]
+3. clock_js [html with reference to javascript]
 
 Goto each directory for specific build, install and run instructions.
