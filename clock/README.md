@@ -10,7 +10,7 @@ popd
 # Running
 Start the webserver daemon:
 ```sh
-start-hello.sh
+clock-start.sh
 ```
 
 Check that the webserver is running:
