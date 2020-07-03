@@ -1,3 +1,10 @@
+# Introduction
+The repository is intended to provide self contained examples for
+building, installing and running web server applications that serve
+web pages rendered using the `elm` programming language. However it
+also exemplifies a build system methodology for managing build and
+runtime dependencies, itself a complex and opinionated subject matter.
+
 # Building Erlang/OTP
 Build Erlang/OTP is relatively easy. You just need to ensure that the
 Linux Distro you are using has the necessary dependencies installed,
@@ -72,3 +79,9 @@ make
 sudo make install
 popd
 ```
+
+# Examples
+This repository contains two examples in their respective directories:
+1. hello
+2. clock
+Goto each directory for specific build, install and run instructions.
