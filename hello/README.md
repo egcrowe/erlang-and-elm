@@ -1,54 +1,24 @@
-# Preparation
-Uses patches to build and install ranch, cowlib and cowboy with autotools
-
-## ranch
+# Building and Installing
 ```sh
-patchesdir=$PWD/patches
-pushd=<your/preferred/location>
-git clone https://github.com/ninenines/ranch.git
-pushd ranch
-git am $patchesdir/ranch-adaptation-for-autotools.patch
 ./bootstrap.sh
 ./configure
 make
 sudo make install
-popd popd
+popd
 ```
 
-## cowlib
+# Running
+Start the webserver daemon:
 ```sh
-patchesdir=$PWD/patches
-pushd=<your/preferred/location>
-git clone https://github.com/ninenines/cowlib.git
-pushd cowlib
-git am $patchesdir/cowlib-adaptation-for-autotools.patch
-./bootstrap.sh
-./configure
-make
-sudo make install
-popd popd
+start-hello.sh
 ```
 
-## cowboy
+Check that the webserver is running:
 ```sh
-patchesdir=$PWD/patches
-pushd=<your/preferred/location>
-git clone https://github.com/ninenines/cowboy.git
-pushd cowboy
-git am $patchesdir/cowboy-adaptation-for-autotools.patch
-./bootstrap.sh
-./configure
-make
-sudo make install
-popd popd
-```
-
-# Building
-```sh
-./bootstrap.sh
-./configure
-make
-sudo make install
-hello-start.sh
 to_erl
 ```
+
+Enter `localhost:8080` into a web browser.
+
+`<CTRL-D>` to quit the shell leaving the daemon running in the
+background or enter `q().` to kill the daemon.
