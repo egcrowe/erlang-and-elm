@@ -1,11 +1,11 @@
 module Main exposing (..)
 
 import Browser
-import Html exposing (Html)
-import Svg exposing (..)
-import Svg.Attributes exposing (..)
+import Html exposing (Html, Attribute, text, div, h1, p)
 import Task
-import Time
+import Time exposing (..)
+
+import Clock exposing (clock)
 
 -- MAIN
 main =
@@ -54,98 +54,63 @@ subscriptions : Model -> Sub Msg
 subscriptions model =
     Time.every 1000 Tick
 
-
-
 -- VIEW
-
-boxSize = 400
-xCoord  = 200
-yCoord  = 200
-radius  = 150
-
-hourMarkRadius = radius - (radius * 0.1)
-hourHandRadius = radius - (radius * 0.5)
-minHandRadius  = radius - (radius * 0.3)
-secHandRadius  = radius - (radius * 0.2)
 
 view : Model -> Html Msg
 view model =
-    let
-        hour   = toFloat (Time.toHour   model.zone model.time)
-        minute = toFloat (Time.toMinute model.zone model.time)
-        second = toFloat (Time.toSecond model.zone model.time)
-    in
-        svg [ viewBox "0 0 400 400"
-            , width  (String.fromInt boxSize)
-            , height (String.fromInt boxSize)
+  let
+    year    = Time.toYear    model.zone model.time
+    month   = Time.toMonth   model.zone model.time
+    day     = Time.toDay     model.zone model.time
+    weekday = Time.toWeekday model.zone model.time
+    hour    = Time.toHour    model.zone model.time
+    minute  = Time.toMinute  model.zone model.time
+    second  = Time.toSecond  model.zone model.time
+  in
+  div []
+    [ h1 [] [ text "Date"]
+    , p  [] [ text (weekdayToString weekday)
+            , text " "
+            , text (monthToString month)
+            , text " "
+            , text (String.fromInt day)
+            , text "th  "
+            , text (String.fromInt year)
             ]
-        [ background
-        , viewHand 4 hourHandRadius (hour/12)   "black"
-        , viewHand 2 minHandRadius  (minute/60) "grey"
-        , viewHand 1 secHandRadius  (second/60) "white"
-        , hourMark hourMarkRadius 1
-        , hourMark hourMarkRadius 2
-        , hourMark hourMarkRadius 3
-        , hourMark hourMarkRadius 4
-        , hourMark hourMarkRadius 5
-        , hourMark hourMarkRadius 6
-        , hourMark hourMarkRadius 7
-        , hourMark hourMarkRadius 8
-        , hourMark hourMarkRadius 9
-        , hourMark hourMarkRadius 10
-        , hourMark hourMarkRadius 11
-        , hourMark hourMarkRadius 12
-        ]
+    , h1 [] [ text "Digital Clock"]
+    , p  [] [ text (String.fromInt hour   |> String.padLeft 2 '0')
+            , text ":"
+            , text (String.fromInt minute |> String.padLeft 2 '0')
+            , text ":"
+            , text (String.fromInt second |> String.padLeft 2 '0')
+            ]
+    , h1 [] [ text "Analogue Clock"]
+    , clock hour minute second
+    ]
 
-background : Svg msg
-background =
-    circle [ cx (String.fromInt xCoord)
-           , cy (String.fromInt yCoord)
-           , r (String.fromInt radius)
-           , fill "rgb(63, 143, 233)"
-           , stroke "black"
-           , strokeWidth "2"
-           ] []
+monthToString : Month -> String
+monthToString month =
+    case month of
+        Jan -> "January"
+        Feb -> "February"
+        Mar -> "March"
+        Apr -> "April"
+        May -> "May"
+        Jun -> "June"
+        Jul -> "July"
+        Aug -> "August"
+        Sep -> "September"
+        Oct -> "October"
+        Nov -> "November"
+        Dec -> "December"
 
-viewHand : Int -> Float -> Float -> String -> Svg msg
-viewHand width length turns colour =
-    let
-        x = coordX length turns
-        y = coordY length turns
-    in
-        line
-        [ x1 (String.fromInt xCoord)
-        , y1 (String.fromInt yCoord)
-        , x2 (String.fromFloat x)
-        , y2 (String.fromFloat y)
-        , stroke colour
-        , strokeWidth (String.fromInt width)
-        , strokeLinecap "round"
-        ] []
-
-hourMark : Float -> Int -> Svg msg
-hourMark length hour =
-    let
-        turns = (toFloat hour)/12
-        x = coordX length turns
-        y = coordY length turns
-    in
-    circle [ cx (String.fromFloat x)
-           , cy (String.fromFloat y)
-           , r "3"
-           , fill "black"
-           ] []
-
-coordX : Float -> Float -> Float
-coordX length turns =
-    let
-        t = 2 * pi * (turns - 0.25)
-    in
-        200 + length * cos t
-
-coordY : Float -> Float -> Float
-coordY length turns =
-    let
-        t = 2 * pi * (turns - 0.25)
-    in
-        200 + length * sin t
+weekdayToString : Weekday -> String
+weekdayToString weekday =
+    case weekday of
+        Mon -> "Monday"
+        Tue -> "Tuesday"
+        Wed -> "Wednesday"
+        Thu -> "Thursday"
+        Fri -> "Friday"
+        Sat -> "Saturday"
+        Sun -> "Sunday"

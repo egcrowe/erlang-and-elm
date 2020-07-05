@@ -52,9 +52,13 @@ clock_js_privstaticdir = $(ERLANG_INSTALL_LIB_DIR_clock_js)/priv
 clock_js_privstatic_DATA = \
    priv/index.html \
    priv/main.js \
-   priv/src/Main.elm
+   $(clock_js_elm_sources)
 
-priv/main.js: priv/src/Main.elm
+clock_js_elm_sources = \
+   priv/src/Main.elm \
+   priv/src/Clock.elm
+
+priv/main.js: $(clock_js_elm_sources)
 	cd $(@D) && $(ELM) make src/$(<F) --output=$(@F)
 
 ## -----------------------------------------------------------------------------
