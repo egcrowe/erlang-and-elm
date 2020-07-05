@@ -9,7 +9,7 @@ xCoord  = 200
 yCoord  = 200
 radius  = 150
 
-hourMarkRadius = radius - (radius * 0.1)
+markRadius     = radius - (radius * 0.1)
 hourHandRadius = radius - (radius * 0.5)
 minHandRadius  = radius - (radius * 0.3)
 secHandRadius  = radius - (radius * 0.2)
@@ -23,7 +23,7 @@ clock hour minute second =
         , width "400"
         , height "400"
         ]
-    (List.concat [ [ background ], handValues, hourMarks ])
+    (List.concat [ [ background ], handValues, hourMarks, minMarks ])
 
 background : Svg msg
 background =
@@ -32,7 +32,7 @@ background =
            , r (String.fromInt radius)
            , fill "rgb(63, 143, 233)"
            , stroke "black"
-           , strokeWidth "2"
+           , strokeWidth "1"
            ] []
 
 hands : Int -> Int -> Int -> List (Svg msg)
@@ -60,7 +60,7 @@ viewHand width length turns colour =
 
 hourMarks : List (Svg msg)
 hourMarks =
-    List.map (\n -> hourMark hourMarkRadius n) (List.range 1 12)
+    List.map (\n -> hourMark markRadius n) (List.range 1 12)
 
 hourMark : Float -> Int -> Svg msg
 hourMark length hour =
@@ -72,6 +72,23 @@ hourMark length hour =
     circle [ cx (String.fromFloat x)
            , cy (String.fromFloat y)
            , r "3"
+           , fill "black"
+           ] []
+
+minMarks : List (Svg msg)
+minMarks =
+    List.map (\n -> minMark markRadius n) (List.range 1 60)
+
+minMark : Float -> Int -> Svg msg
+minMark length minute =
+    let
+        turns = (toFloat minute)/60
+        x = coordX length turns
+        y = coordY length turns
+    in
+    circle [ cx (String.fromFloat x)
+           , cy (String.fromFloat y)
+           , r "1"
            , fill "black"
            ] []
 
