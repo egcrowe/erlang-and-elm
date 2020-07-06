@@ -18,14 +18,17 @@ secHandRadius  = radius - (radius * 0.2)
 clock : Weekday -> Int -> Int -> Int -> Int -> Html msg
 clock weekday day hour minute second =
     let
-        handValues = hands hour minute second
+        ampmValue  = ampm hour
         dateValues = date_ weekday day
+        handValues = hands hour minute second
     in
     svg [ viewBox (viewBoxValue boxSize)
         , width (String.fromInt boxSize)
         , height (String.fromInt boxSize)
         ]
     (List.concat [ background
+                 , ampmBox
+                 , ampmValue
                  , dateBox
                  , dateValues
                  , handValues
@@ -49,6 +52,29 @@ background =
              , stroke "black"
              , strokeWidth "1"
              ] []
+    ]
+
+ampmBox : List (Svg msg)
+ampmBox =
+    [ rect [ x      (String.fromFloat (xCoord * 75/200))
+           , y      (String.fromFloat (yCoord * 190/200))
+           , width  (String.fromFloat (xCoord * 45/200))
+           , height (String.fromFloat (yCoord * 20/200))
+           , fill "darkgrey"
+           , stroke "black"
+           , strokeWidth "1"
+           ] []
+    ]
+
+ampm : Int -> List (Svg msg)
+ampm hour =
+    [ text_ [ x (String.fromFloat (xCoord * 85/200))
+            , y (String.fromFloat (yCoord * 204/200))
+            , fill (hourToampmColour hour)
+            , fontSize "12"
+            ]
+          [ text (hourToampmString hour)
+          ]
     ]
 
 dateBox : List (Svg msg)
@@ -181,3 +207,15 @@ weekdayToColour weekday =
         Fri -> "white"
         Sat -> "blue"
         Sun -> "red"
+
+hourToampmString : Int -> String
+hourToampmString hour =
+    case hour >= 12 of
+        True  -> "PM"
+        False -> "AM"
+
+hourToampmColour: Int -> String
+hourToampmColour hour =
+    case hour >= 12 of
+        True  -> "black"
+        False -> "white"
