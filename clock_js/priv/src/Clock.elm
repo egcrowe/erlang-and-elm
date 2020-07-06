@@ -3,42 +3,96 @@ module Clock exposing (clock)
 import Html exposing (Html)
 import Svg exposing (..)
 import Svg.Attributes exposing (..)
+import Time exposing (..)
 
 boxSize = 400
-xCoord  = 200
-yCoord  = 200
-radius  = 150
+xCoord  = boxSize/2
+yCoord  = boxSize/2
+radius  = boxSize/2 * 3/4
 
 markRadius     = radius - (radius * 0.1)
 hourHandRadius = radius - (radius * 0.5)
 minHandRadius  = radius - (radius * 0.3)
 secHandRadius  = radius - (radius * 0.2)
 
-clock : Int -> Int -> Int -> Html msg
-clock hour minute second =
+clock : Weekday -> Int -> Int -> Int -> Int -> Html msg
+clock weekday day hour minute second =
     let
         handValues = hands hour minute second
+        dateValues = date_ weekday day
     in
-    svg [ viewBox "0 0 400 400"
-        , width "400"
-        , height "400"
+    svg [ viewBox (viewBoxValue boxSize)
+        , width (String.fromInt boxSize)
+        , height (String.fromInt boxSize)
         ]
-    (List.concat [ [ background ], handValues, hourMarks, minMarks ])
+    (List.concat [ background
+                 , dateBox
+                 , dateValues
+                 , handValues
+                 , hourMarks
+                 , minMarks
+                 ]
+    )
 
-background : Svg msg
+viewBoxValue : Int -> String
+viewBoxValue size =
+    List.map (\n -> String.fromInt n) [0, 0, size, size]
+        |> List.intersperse " "
+        |> String.concat
+
+background : List (Svg msg)
 background =
-    circle [ cx (String.fromInt xCoord)
-           , cy (String.fromInt yCoord)
-           , r (String.fromInt radius)
-           , fill "rgb(63, 143, 233)"
+    [ circle [ cx (String.fromFloat xCoord)
+             , cy (String.fromFloat yCoord)
+             , r  (String.fromFloat radius)
+             , fill "lightgrey"
+             , stroke "black"
+             , strokeWidth "1"
+             ] []
+    ]
+
+dateBox : List (Svg msg)
+dateBox =
+    [ rect [ x      (String.fromFloat (xCoord * 280/200))
+           , y      (String.fromFloat (yCoord * 190/200))
+           , width  (String.fromFloat (xCoord * 45/200))
+           , height (String.fromFloat (yCoord * 20/200))
+           , fill "darkgrey"
            , stroke "black"
            , strokeWidth "1"
            ] []
+    ]
+
+date_ : Weekday -> Int -> List (Svg msg)
+date_ weekday day =
+    [ weekday_ weekday
+    , day_ day
+    ]
+
+weekday_ : Weekday -> Svg msg
+weekday_ weekday =
+    text_ [ x (String.fromFloat (xCoord * 283/200))
+          , y (String.fromFloat (yCoord * 204/200))
+          , fill (weekdayToColour weekday)
+          , fontSize "12"
+          ]
+    [ text (weekdayToString weekday)
+    ]
+
+day_ : Int -> Svg msg
+day_ day =
+    text_ [ x (String.fromFloat (xCoord * 310/200))
+          , y (String.fromFloat (yCoord * 204/200))
+          , fill "white"
+          , fontSize "12"
+          ]
+    [ text (String.fromInt day)
+    ]
 
 hands : Int -> Int -> Int -> List (Svg msg)
 hands hour minute second =
     [ viewHand 4 hourHandRadius ((toFloat hour)/12)   "black"
-    , viewHand 2 minHandRadius  ((toFloat minute)/60) "grey"
+    , viewHand 2 minHandRadius  ((toFloat minute)/60) "black"
     , viewHand 1 secHandRadius  ((toFloat second)/60) "white"
     ]
 
@@ -49,8 +103,8 @@ viewHand width length turns colour =
         y = coordY length turns
     in
         line
-        [ x1 (String.fromInt xCoord)
-        , y1 (String.fromInt yCoord)
+        [ x1 (String.fromFloat xCoord)
+        , y1 (String.fromFloat yCoord)
         , x2 (String.fromFloat x)
         , y2 (String.fromFloat y)
         , stroke colour
@@ -97,11 +151,33 @@ coordX length turns =
     let
         t = 2 * pi * (turns - 0.25)
     in
-        200 + length * cos t
+        xCoord + length * cos t
 
 coordY : Float -> Float -> Float
 coordY length turns =
     let
         t = 2 * pi * (turns - 0.25)
     in
-        200 + length * sin t
+        yCoord + length * sin t
+
+weekdayToString : Weekday -> String
+weekdayToString weekday =
+    case weekday of
+        Mon -> "Mon"
+        Tue -> "Tue"
+        Wed -> "Wed"
+        Thu -> "Thu"
+        Fri -> "Fri"
+        Sat -> "Sat"
+        Sun -> "Sun"
+
+weekdayToColour : Weekday -> String
+weekdayToColour weekday =
+    case weekday of
+        Mon -> "white"
+        Tue -> "white"
+        Wed -> "white"
+        Thu -> "white"
+        Fri -> "white"
+        Sat -> "blue"
+        Sun -> "red"

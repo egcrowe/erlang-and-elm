@@ -85,7 +85,7 @@ view model =
             , text (String.fromInt second |> String.padLeft 2 '0')
             ]
     , h1 [] [ text "Analogue Clock"]
-    , clock hour minute second
+    , clock weekday day hour minute second
     ]
 
 monthToString : Month -> String
